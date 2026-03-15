@@ -9,10 +9,29 @@ export default function Cadastro() {
   const [escola, setEscola] = useState('');
   const [matri, setMatri] = useState('');
 
-  const handleCadastro = () => {
-    // Aqui você pode enviar os dados para o backend futuramente
-    alert('Conta criada com sucesso!');
-    router.push('/LoginScreen');
+  const API_URL = 'http://localhost:3001/api/auth';
+
+  const handleCadastro = async () => {
+    try {
+      const response = await fetch(`${API_URL}/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ nome: matri, email, senha })
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        return alert(data.error || 'Erro ao criar conta');
+      }
+
+      alert('Conta criada com sucesso! Faça login.');
+      router.push('/LoginScreen');
+    } catch (error) {
+      console.error(error);
+      alert('Erro ao conectar com o servidor');
+    }
   };
 
   return (

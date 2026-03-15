@@ -10,6 +10,10 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "mysql2": "^3.19.1"
+    "axios": "^1.13.6",
+    "expo": "^55.0.6",
+    "expo-router": "^55.0.5",
+    "mysql2": "^3.19.1",
+    "react-native": "^0.84.1"
   }
 }

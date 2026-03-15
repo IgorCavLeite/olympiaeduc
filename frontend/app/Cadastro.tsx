@@ -1,36 +1,51 @@
-import { View, Text, KeyboardAvoidingView, Platform, ScrollView, TextInput, Button, StyleSheet, Image } from 'react-native';
+import axios from 'axios';
+import { View, Text, TextInput, Button, StyleSheet, Image, Alert, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
 
 export default function Cadastro() {
   const router = useRouter();
+  const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [escola, setEscola] = useState('');
   const [matri, setMatri] = useState('');
+  const [carregando, setCarregando] = useState(false)
 
-  const API_URL = 'http://localhost:3001/api/auth';
+  const API_URL = 'http://10.0.0.102:3001/api/auth/register';
 
   const handleCadastro = async () => {
+    //1. Validação
+    if (!nome || !email || !senha || !escola || !matri) {
+      Alert.alert('Erro', 'Todos os campos são obrigarórios');
+      return;
+    }
+
+    setCarregando(true);
+
     try {
-      const response = await fetch(`${API_URL}/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ nome: matri, email, senha })
-      });
+      // Chamada para o Backend
+      const API_URL = 'http://127.0.0.1:3001/api/auth/register';  
 
-      const data = await response.json();
-      if (!response.ok) {
-        return alert(data.error || 'Erro ao criar conta');
-      }
+      await axios.post(API_URL, {
+        nome,
+        email,
+        senha,
+        matricula: matri,
+        escola
+    });
 
-      alert('Conta criada com sucesso! Faça login.');
-      router.push('/LoginScreen');
-    } catch (error) {
-      console.error(error);
-      alert('Erro ao conectar com o servidor');
+    // Sucesso
+    Alert.alert('Sucesso', 'conta criada com sucesso!', [
+      { text: 'OK', onPress: () => router.push('/LoginScreen') }
+    ]);
+    } catch (error: any) {
+      // Tratamento de erro
+      console.log("Erro detalhado:", error.message);
+      const mensagemErro = error.response?.data?.error || 'Erro ao conectar ao servidor';
+      Alert.alert('Falha no Cadastro', mensagemErro);
+    } finally {
+      setCarregando(false);
     }
   };
 
@@ -39,11 +54,25 @@ export default function Cadastro() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}
     >
-    <ScrollView style={styles.container}>
-      <Image source={require('../assets/images/logo.png')} style={styles.logo} />
+    <ScrollView 
+      contentContainerStyle={{ 
+      flexGrow: 1, 
+      paddingBottom: 40, 
+      paddingTop: 20 // Espaço no topo para não ficar colado
+    }}
+>
+      
+      <Image source={require('../assets/images/logo.png')} style={[styles.logo, { height: 100 }]} />
 
       <Text style={styles.title}>Olimp<Text style={styles.ia}>IA</Text></Text>
       <Text style={styles.titleCadastro}>Cadastro</Text>
+
+      <TextInput
+      placeholder="Nome Completo"
+      style={styles.input}
+      value={nome}
+      onChangeText={setNome}
+      />
 
       <TextInput
         placeholder="Matrícula"
@@ -74,7 +103,7 @@ export default function Cadastro() {
         onChangeText={setSenha}
       />
 
-      <Button title="Cadastrar" onPress={handleCadastro} />
+      <Button title={carregando ? "Cadastrando..." : "Cadastrar"} onPress={handleCadastro} disabled={carregando} />
 
       <Text style={styles.link} onPress={() => router.push('/LoginScreen')}>
         Já tem conta? Faça login
@@ -95,9 +124,9 @@ const styles = StyleSheet.create({
   },
   title: {
     fontFamily: "",
-    fontSize: 60,
+    fontSize: 40,
     textAlign: "center",
-    marginBottom: 20
+    marginBottom: 10
   },
   titleCadastro: {
     fontSize: 30,
@@ -106,7 +135,7 @@ const styles = StyleSheet.create({
   },
   ia: {
     fontFamily: "",
-    fontSize: 60,
+    fontSize: 40,
     color: "#e4b93f",
     textAlign: "center",
     marginBottom: 20
@@ -125,9 +154,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   logo: {
-    width: 200,
-    height: 230,
+    width: 150,
+    height: 150,
     alignSelf: 'center',
-    marginBottom: 20,
+    marginBottom: 10,
   }
 });

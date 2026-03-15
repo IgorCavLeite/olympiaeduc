@@ -15,6 +15,7 @@ export default function Cadastro() {
   const API_URL = 'http://10.0.0.102:3001/api/auth/register';
 
   const handleCadastro = async () => {
+    console.log("Tentando enviar para:", API_URL)
     //1. Validação
     if (!nome || !email || !senha || !escola || !matri) {
       Alert.alert('Erro', 'Todos os campos são obrigarórios');
@@ -25,7 +26,6 @@ export default function Cadastro() {
 
     try {
       // Chamada para o Backend
-      const API_URL = 'http://127.0.0.1:3001/api/auth/register';  
 
       await axios.post(API_URL, {
         nome,

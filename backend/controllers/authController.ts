@@ -10,13 +10,15 @@ interface Usuario {
   nome: string;
   email: string;
   senha?: string;
+  matricula: string;
+  escola: string;
 }
 
 export const register = (req: Request, res: Response) => {
-  const { nome, email, senha } = req.body;
+  const { nome, email, senha, matricula, escola } = req.body;
 
-  if (!nome || !email || !senha) {
-    return res.status(400).json({ error: 'Nome, email e senha são obrigatórios' });
+  if (!nome || !email || !senha || !matricula || !escola) {
+    return res.status(400).json({ error: 'Todos os camppos são obrigatórios' });
   }
 
   const checkSql = 'SELECT id FROM usuarios WHERE email = ?';
@@ -36,8 +38,9 @@ export const register = (req: Request, res: Response) => {
         return res.status(500).json({ error: 'Erro no servidor' });
       }
 
-      const insertSql = 'INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)';
-      connection.query(insertSql, [nome, email, hash], (insertErr, result: any) => {
+      const insertSql = 'INSERT INTO usuarios (nome, email, senha, matricula,escola) VALUES (?, ?, ?, ?, ?)';
+
+      connection.query(insertSql, [nome, email, hash, matricula, escola], (insertErr, result: any) => {
         if (insertErr) {
           console.error('Erro ao criar usuário:', insertErr);
           return res.status(500).json({ error: 'Erro no servidor' });

@@ -9,7 +9,6 @@ export default function Login() {
   const [senha, setSenha] = useState('');
   const [carregando, setCarregando] = useState(false);
 
-  // IMPORTANTE: Substitua '192.168.x.x' pelo IP real da sua máquina
   // Você descobre o IP digitando 'ipconfig' no terminal do Windows
   const API_URL = 'http://10.0.0.102:3001/api/auth/login';
 
